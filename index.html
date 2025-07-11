@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chess Twitch</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="root">
+    <h1>Chess Twitch</h1>
+    <div id="twitch-connect-container" style="display: flex; flex-direction: column; align-items: center; margin: 24px 0; gap: 8px;">
+      <div style="display: flex; gap: 8px;">
+        <input id="twitch-channel-input" type="text" placeholder="Twitch channel" style="padding: 8px; font-size: 1em; border-radius: 6px; border: 1px solid #ccc; width: 160px;">
+        <input id="twitch-username-input" type="text" placeholder="Twitch username" style="padding: 8px; font-size: 1em; border-radius: 6px; border: 1px solid #ccc; width: 160px;">
+      </div>
+      <button id="twitch-connect-btn" style="padding: 12px 24px; font-size: 1.1em; background: #9147ff; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px #0001; transition: background 0.2s;">Połącz z Twitch</button>
+    </div>
+    <div id="chessboard-container"></div>
+    <div id="game-message"></div>
+    <div id="game-info">
+      <span id="turn-indicator">White's turn</span>
+      <button id="reset-btn">Reset</button>
+    </div>
+    <div id="notation-tester" style="margin-top: 24px; text-align: center;">
+      <input id="notation-input" type="text" maxlength="4" placeholder="np. d7d6" style="font-size: 1.2em; width: 80px; text-align: center;">
+      <button id="notation-btn" style="font-size: 1.1em;">Wykonaj ruch</button>
+      <div id="notation-error" style="color: red; margin-top: 8px;"></div>
+    </div>
+  </div>
+  <script src="tmi.min.js"></script>
+  <script src="chess.js"></script>
+  <script src="twitch-chess.js"></script>
+  <script>
+  // Tester ruchów z notacji
+  document.getElementById('notation-btn').onclick = function() {
+    const input = document.getElementById('notation-input').value.trim();
+    const errorDiv = document.getElementById('notation-error');
+    errorDiv.textContent = '';
+    if (!/^[a-h][1-8][a-h][1-8]$/.test(input)) {
+      errorDiv.textContent = 'Niepoprawny format notacji!';
+      return;
+    }
+    const fromCol = input.charCodeAt(0) - 97;
+    const fromRow = 8 - parseInt(input[1]);
+    const toCol = input.charCodeAt(2) - 97;
+    const toRow = 8 - parseInt(input[3]);
+    if (typeof getLegalMoves === 'function') {
+      const legalMoves = getLegalMoves(fromRow, fromCol);
+      const move = legalMoves.find(m => m.row === toRow && m.col === toCol);
+      if (move) {
+        window.selected = { row: fromRow, col: fromCol };
+        window.possibleMoves = legalMoves;
+        if (typeof window.onSquareClick === 'function') {
+          window.onSquareClick({ currentTarget: { dataset: { row: toRow, col: toCol } } });
+          errorDiv.textContent = '';
+        }
+      } else {
+        errorDiv.textContent = 'Ruch nielegalny w tej pozycji!';
+      }
+    }
+  };
+  </script>
+</body>
+</html>
