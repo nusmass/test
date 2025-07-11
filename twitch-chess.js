@@ -2,7 +2,7 @@
 
 // Ustaw te dane na swoje!
 const TWITCH_CLIENT_ID = '6ett8vyjp3x0cvxa2wzleuwh5sw4hk'; // <- Uzupełnij!
-const TWITCH_REDIRECT_URI = 'https://nusmass.github.io/chess-game-twitch/';
+const TWITCH_REDIRECT_URI = 'https://nusmass.github.io/test/';
 const TWITCH_SCOPE = 'chat:read';
 
 const connectBtn = document.getElementById('twitch-connect-btn');
